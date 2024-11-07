@@ -91,11 +91,93 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        
+        <h2 id="music-website项目配置"><a href="#music-website项目配置" class="headerlink" title="music-website项目配置"></a>music-website项目配置</h2><p>开源地址：<a target="_blank" rel="noopener" href="https://github.com/Yin-Hongwei/music-website">Yin-Hongwei&#x2F;music-website: 🎧 Vue + SpringBoot + MyBatis 音乐网站</a></p>
+<h3 id="初始配置："><a href="#初始配置：" class="headerlink" title="初始配置："></a>初始配置：</h3><p>JDK： jdk-8u141</p>
+<p>mysql：mysql-5.7.21-1-macos10.13-x86_64（或者更高版本）</p>
+<p>redis：5.0.8 或 <a target="_blank" rel="noopener" href="https://nanshaws.github.io/docker/docker%E5%90%AF%E5%8A%A8redis(%E5%AE%8C%E7%BE%8E%E8%BF%87%E7%A8%8B).html">docker启动redis | 想飞跃的鱼 (nanshaws.github.io)</a></p>
+<p>node：14.17.3 【不要超过大版本16】</p>
+<p>IDE：IntelliJ IDEA 2018、VSCode</p>
+<p>minio: 下载本地最新 或者 <a target="_blank" rel="noopener" href="https://nanshaws.github.io/docker/docker%E5%AE%8C%E7%BE%8E%E5%90%AF%E5%8A%A8minio(%E5%AE%8C%E7%BE%8E%E8%BF%87%E7%A8%8B).html">docker完美启动minio | 想飞跃的鱼 (nanshaws.github.io)</a></p>
+<hr>
+<h3 id="克隆源码问题："><a href="#克隆源码问题：" class="headerlink" title="克隆源码问题："></a>克隆源码问题：</h3><p>git clone <a target="_blank" rel="noopener" href="https://github.com/Yin-Hongwei/music-website.git">https://github.com/Yin-Hongwei/music-website.git</a></p>
+<blockquote>
+<p>Failed to connect to github.com port 443 after 21054 ms: Could not connect to server</p>
+</blockquote>
+<p>一般出现这种问题都是开过VPN导致的本机系统端口号和git的端口号不一致导致的</p>
+<p>Git默认使用SSH协议，其默认端口是22</p>
+<p>HTTPS协议默认使用端口443</p>
+<p>解决方法：</p>
+<ol>
+<li>查看本机系统端口号</li>
+</ol>
+<blockquote>
+<p>设置-&gt;网络和Internet-&gt;代理</p>
+</blockquote>
+<img src="assets/image-20241105175519030.png" alt="image-20241105175519030" style="zoom:50%;" />
+
+<ol start="2">
+<li>设置git端口号和上面的端口号保持一致</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global http.proxy 127.0.0.1:代理服务器端口</span><br><span class="line">git config --global https.proxy 127.0.0.1:代理服务器端口</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>查看git设置</li>
+</ol>
+<blockquote>
+<p>git config –global -l</p>
+<p>user.name&#x3D;Inf<br>user.email&#x3D;<a href="mailto:&#x32;&#48;&#x33;&#53;&#x32;&#x33;&#54;&#x34;&#x36;&#53;&#x40;&#113;&#x71;&#x2e;&#x63;&#111;&#x6d;">&#x32;&#48;&#x33;&#53;&#x32;&#x33;&#54;&#x34;&#x36;&#53;&#x40;&#113;&#x71;&#x2e;&#x63;&#111;&#x6d;</a><br>http.proxy&#x3D;127.0.0.1:7890<br>https.proxy&#x3D;127.0.0.1:7890</p>
+</blockquote>
+<ol start="4">
+<li>如果没有挂着vpn，但是还是遇到了以上报错</li>
+</ol>
+<p>还是一样的原因，两边的端口不一致导致的，那么直接去掉git代理即可：</p>
+<blockquote>
+<p>git config –global –unset http.proxy</p>
+<p>git config –global –unset https.proxy</p>
+</blockquote>
+<hr>
+<h3 id="minio安装配置："><a href="#minio安装配置：" class="headerlink" title="minio安装配置："></a>minio安装配置：</h3><ol>
+<li>安装与配置Minio <a target="_blank" rel="noopener" href="https://dl.min.io/server/minio/release/windows-amd64/">dl.min.io&#x2F;server&#x2F;minio&#x2F;release&#x2F;windows-amd64&#x2F;</a> cmd打开mini.exe所在文件夹</li>
+<li>设置管理员账号和密码</li>
+</ol>
+<blockquote>
+<p>set minio_root_user&#x3D;minioadmin</p>
+<p>set minio_root_password&#x3D;minioadmin</p>
+</blockquote>
+<ol start="3">
+<li>执行以下指令启动minio</li>
+</ol>
+<blockquote>
+<p>minio.exe server D:\MinIo\minio –console-address “:9001” –address “:9000”</p>
+</blockquote>
+<p>这条命令用于启动MinIO服务器，指定了数据存储的路径为<code>P:\MinIo\minio</code>，并设置了MinIO服务的API端口为<code>9000</code>，控制台端口为<code>9001</code></p>
+<ol start="4">
+<li>然后就是访问 localhost:9001 创建bucket</li>
+<li>单服务配置文件添加minio配置</li>
+</ol>
+<blockquote>
+<p>minio:<br>endpoint: <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=http&spm=1001.2101.3001.7020">http</a>:&#x2F;&#x2F;xxx.xxx.xxx.xxx:9000<br>accessKey: minioadmin<br>secretKey: minioadmin<br>bucketName: minioadmin</p>
+</blockquote>
+<ol start="6">
+<li>修改单服务配置文件 文件大小限制（默认1MB）</li>
+</ol>
+<blockquote>
+<p>spring:<br><a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=servlet&spm=1001.2101.3001.7020">servlet</a>:<br> multipart:<br>   max-file-size: 5MB</p>
+</blockquote>
+<hr>
+<h3 id="文件导入与Bucket资源导入"><a href="#文件导入与Bucket资源导入" class="headerlink" title="文件导入与Bucket资源导入:"></a>文件导入与Bucket资源导入:</h3><p>链接: <a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1Qv0ohAIPeTthPK_CDwpfWg">https://pan.baidu.com/s/1Qv0ohAIPeTthPK_CDwpfWg</a> 提取码: gwa4</p>
+<blockquote>
+<p>注意：资源整理了一下，按照下面的截图存放</p>
+</blockquote>
+<img src="assets/68747470733a2f2f747661312e73696e61696d672e636e2f6c617267652f65366339643234656c79316836677a316c653977786a3230666f306767676d682e6a7067.jpeg" alt="img" style="zoom:50%;" />
+
+<p>Bucket创建导入即可【我这里bucketName叫minioadmin】</p>
+<p><img src="/assets/image-20241106142306573.png" alt="image-20241106142306573"></p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2024/11/07/newpapername/" data-id="cm36xfepq0001loo23veoaodq" data-title="newpapername" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2024/11/07/newpapername/" data-id="cm3745d4f0001p8o2b0547nub" data-title="newpapername" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -146,7 +228,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2024/11/07/hello-world/" data-id="cm36xfepm0000loo26hzpd8zr" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2024/11/07/hello-world/" data-id="cm3745d4c0000p8o2ec5h9723" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
